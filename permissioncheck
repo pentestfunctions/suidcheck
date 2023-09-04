@@ -1,0 +1,36 @@
+permissioncheck () {
+  filename="$1"
+  fullpath=$(realpath "$filename")
+  dirname=$(dirname "$fullpath")
+
+  echo "=================================="
+  echo "Filename:  $filename in $dirname"
+
+  ls -ld "$filename" | awk '{print $1, $3, $4}' | awk -v user=$(whoami) -v group=$(id -gn) '
+  function format_permission(symbol, permission) {
+    if (symbol == "-") {
+      return permission " (No)";
+    } else {
+      return permission " (OK)";
+    }
+  }
+
+  BEGIN {
+    type_trans["-"] = "Regular File";
+    type_trans["d"] = "Directory";
+    type_trans["l"] = "Symbolic Link";
+  }
+
+  {
+    own = ($2 == user) ? "Yes" : "No";
+    grp = ($3 == group) ? "Yes" : "No";
+    
+    printf "Owner: %s (You are owner: %s)\nGroup: %s (You are in group: %s)\nType: %s\nUser: %s | %s | %s\nGroup: %s | %s | %s\nOthers: %s | %s | %s\n", 
+    $2, own, $3, grp, type_trans[substr($1, 1, 1)], 
+    format_permission(substr($1, 2, 1), "Read"), format_permission(substr($1, 3, 1), "Write"), format_permission(substr($1, 4, 1), "Execute"), 
+    format_permission(substr($1, 5, 1), "Read"), format_permission(substr($1, 6, 1), "Write"), format_permission(substr($1, 7, 1), "Execute"), 
+    format_permission(substr($1, 8, 1), "Read"), format_permission(substr($1, 9, 1), "Write"), format_permission(substr($1, 10, 1), "Execute")
+  }'
+
+  echo "=================================="
+}
