@@ -31,7 +31,7 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "alpine")
-					echo LFILE=file_to_read
+                    echo LFILE=file_to_read
                     echo Associated Command: "$full_binary_path" -F $LFILE
                     found_flag=1
                     ;;
