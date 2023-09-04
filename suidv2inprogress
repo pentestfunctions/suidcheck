@@ -17,7 +17,7 @@ suidcheck() {
             # Print the associated commands
             case "$binary" in
                 "sudo")
-                    echo Associated Command: "$full_binary_path" this is just a sudo check - nothing to see here (testing)
+                    echo Associated Command: "$full_binary_path" "this is just a sudo check - nothing to see here (testing)"
                     found_flag=1
                     ;;
                 "aa-exec")
