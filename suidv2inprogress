@@ -73,7 +73,7 @@ suidcheck() {
                 "aspell")
                     echo LFILE=file_to_read
                     echo ./aspell -c "$LFILE"
-                    echo found_flag=1
+                    found_flag=1
                     ;;
                 "atobm")
                     echo LFILE=file_to_read
