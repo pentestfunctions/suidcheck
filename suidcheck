@@ -16,5 +16,3 @@ suidcheck() {
     fi
 }
 
-# To run the function, simply call it
-check_suid_binaries
