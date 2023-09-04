@@ -457,7 +457,7 @@ suidcheck() {
                     ;;
                 "ispell")
                     echo "$full_binary_path" /etc/passwd
-                    echo !/bin/sh -p
+                    echo '!/bin/sh -p'
                     found_flag=1
                     ;;
                 "jjs")
