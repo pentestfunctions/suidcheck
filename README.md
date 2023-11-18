@@ -18,6 +18,13 @@ find / -perm u=s -type f 2>/dev/null
 - **Comprehensive Checking**: Utilizes an extensive list of known GTFO bins.
 - **Quick Detection**: Efficiently identifies SUID binaries with potential vulnerabilities.
 
+## A fun alternative way to use this:
+- This make the suidcheck directly on your clipboard ready to paste into your remote session.
+```
+sudo apt-get install xclip
+suidcheck=$(curl https://raw.githubusercontent.com/pentestfunctions/functions/main/suidcheck); echo $suidcheck | xclip -sel clipboard
+```
+
 ## Installation :wrench:
 1. Copy the `suidcheck` function code directly from github.
 2. Paste it into your terminal on the remote machine.
