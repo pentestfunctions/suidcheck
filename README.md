@@ -19,7 +19,7 @@ find / -perm u=s -type f 2>/dev/null
 - **Quick Detection**: Efficiently identifies SUID binaries with potential vulnerabilities.
 
 ## A fun alternative way to use this:
-- This make the suidcheck directly on your clipboard ready to paste into your remote session.
+- This make the suidcheck directly on your clipboard ready to paste into your remote session (Make sure you do this on your host OS)
 ```
 sudo apt-get install xclip
 suidcheck=$(curl https://raw.githubusercontent.com/pentestfunctions/functions/main/suidcheck); echo $suidcheck | xclip -sel clipboard
