@@ -22,7 +22,7 @@ find / -perm u=s -type f 2>/dev/null
 - This make the suidcheck directly on your clipboard ready to paste into your remote session (Make sure you do this on your host OS)
 ```
 sudo apt-get install xclip
-suidcheck=$(curl https://raw.githubusercontent.com/pentestfunctions/functions/main/suidcheck); echo $suidcheck | xclip -sel clipboard
+suidcheck=$(curl https://raw.githubusercontent.com/pentestfunctions/suidcheck/main/suidcheck); echo $suidcheck | xclip -sel clipboard
 ```
 
 ## Installation :wrench:
