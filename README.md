@@ -24,6 +24,8 @@ find / -perm u=s -type f 2>/dev/null
 sudo apt-get install xclip
 suidcheck=$(curl https://raw.githubusercontent.com/pentestfunctions/suidcheck/main/suidcheck); echo $suidcheck | xclip -sel clipboard
 ```
+- The above will install xclip and copy the suidcheck function to your clipboard. You can now simply paste your clipboard into your terminal and press enter.
+- The function at this point is all ready to go and can be called on by typing in `suidcheck`
 
 ## Installation :wrench:
 1. Copy the `suidcheck` function code directly from github.
